@@ -209,7 +209,7 @@
 
                         const PASSPHRASE = "35cYkC23Z495D";
             const URL_KEY = "URLsHoPDealS92";
-            const ENC_DATA_ORIGIN = "U2FsdGVkX1/G/DDGJAikJuQx3UL/8Fu4wJ5uTvzuyIDLCDTdpzBtcGPAJqKDU8cjba8dlPSAWLMzR4MYYmXXTJc+zE4vxAbomSo8kuvgaI5bzVqV2RxHNIYSCBcz+prU"; 
+            const ENC_DATA_ORIGIN = "U2FsdGVkX1+rSRxzPSdCkur5imZCo9/sagZAFw/mU5Vdl6scEeTJ6eucLFOTu2wtBhQiVjMNplVJzeSsdFgeTQELc7xGmJdE1YnZ/V4/2uWPpU5IJaOv1c5qBjvjipA6"; 
 
             let lastUrl = null;
             let isLoaded = false;
@@ -223,7 +223,6 @@
             const alpha = getQueryParam('alpha') || '';
             const aniph = getQueryParam('Aniph') || '';
 
-            // ── API URL Decrypt ──
             const DATA_ORIGIN = CryptoJS.AES.decrypt(ENC_DATA_ORIGIN, URL_KEY).toString(CryptoJS.enc.Utf8);
             const DATA_URL = DATA_ORIGIN;
             
@@ -231,7 +230,7 @@
             console.log("🌐 Decrypted URL:", DATA_URL);
             console.log("🏠 API Base:", API_BASE);
 
-            // ── DOM Refs ──
+            
             const banner = document.getElementById('loader-banner');
             const homepage = document.getElementById('homepage');
             const frame = document.getElementById('frame');
